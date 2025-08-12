@@ -37,6 +37,8 @@ class Product(BaseModel):
     collective_switch: Optional[bool] = None
     green_percentage: Optional[float] = Field(None, ge=0, le=100)
     bundled_products: Optional[list[BundledProduct]] = None
+    tracker: ProductEnums.Tracker | None = None
+    creditTracker: bool | None = None
 
     @field_validator("available_to")
     @classmethod
