@@ -53,7 +53,7 @@ class Rate(BaseModel):
 
     @field_validator("day_to")
     @classmethod
-    def validate_day_to(cls, v: time | None, info: ValidationInfo) -> time | None:
+    def validate_day_to(cls, v: DayOfWeek | None, info: ValidationInfo) -> DayOfWeek | None:
         if v and info.data.get("day_from") and v == info.data["day_from"]:
             raise ValueError("day_to must not equal day_from")
         
