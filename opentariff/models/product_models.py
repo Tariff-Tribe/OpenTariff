@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, Field, field_validator, ConfigDict
+from pydantic import BaseModel, Field, field_validator, ConfigDict, ValidationInfo
 
 from opentariff.Enums.product_enums import ProductEnums
 
@@ -40,7 +40,7 @@ class Product(BaseModel):
 
     @field_validator("available_to")
     @classmethod
-    def validate_available_to(cls, v: Optional[datetime], info) -> Optional[datetime]:
+    def validate_available_to(cls, v: Optional[datetime], info: ValidationInfo) -> Optional[datetime]:
         if v and info.data.get("available_from") and v <= info.data["available_from"]:
             raise ValueError("available_to must be after available_from")
         return v
