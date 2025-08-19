@@ -39,7 +39,7 @@ class Product(BaseModel):
 
     @field_validator("available_to")
     @classmethod
-    def validate_available_to(cls, v: datetime | None, info: ValidationInfo) -> Optional[datetime]:
+    def validate_available_to(cls, v: datetime | None, info: ValidationInfo) -> datetime | None:
         if v and info.data.get("available_from") and v <= info.data["available_from"]:
             raise ValueError("available_to must be after available_from")
         return v
