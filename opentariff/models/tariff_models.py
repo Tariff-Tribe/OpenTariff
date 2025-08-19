@@ -1,7 +1,7 @@
 from datetime import datetime, date, time
 from decimal import Decimal
 from typing import Self
-from pydantic import BaseModel, Field, field_validator, ConfigDict, model_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict, model_validator, ValidationInfo
 
 from opentariff.Enums.base_enums import DayOfWeek
 from opentariff.Enums.tariff_enums import TariffEnums
@@ -45,28 +45,30 @@ class Rate(BaseModel):
 
     @field_validator("time_to")
     @classmethod
-    def validate_time_to(cls, v: time | None, info) -> time | None:
+    def validate_time_to(cls, v: time | None, info: ValidationInfo) -> time | None:
         if v and info.data.get("time_from") and v == info.data["time_from"]:
             raise ValueError("time_to must not equal time_from")
+        
         return v
 
     @field_validator("day_to")
     @classmethod
-    def validate_day_to(cls, v: time | None, info) -> time | None:
+    def validate_day_to(cls, v: time | None, info: ValidationInfo) -> time | None:
         if v and info.data.get("day_from") and v == info.data["day_from"]:
             raise ValueError("day_to must not equal day_from")
+        
         return v
 
     @field_validator("month_to")
     @classmethod
-    def validate_month_to(cls, v: int | None, info) -> int | None:
+    def validate_month_to(cls, v: int | None, info: ValidationInfo) -> int | None:
         if v and info.data.get("month_from") and v == info.data["month_from"]:
             raise ValueError("month_to must not equal to month_from")
         return v
 
     @field_validator("consumption_to")
     @classmethod
-    def validate_consumption_to(cls, v: Decimal | None, info) -> Decimal| None:
+    def validate_consumption_to(cls, v: Decimal | None, info: ValidationInfo) -> Decimal| None:
         if (
             v
             and info.data.get("consumption_from")
@@ -113,7 +115,7 @@ class Tariff(BaseModel):
 
     @field_validator("rates")
     @classmethod
-    def validate_rates(cls, v: list[Rate], info) -> list[Rate]:
+    def validate_rates(cls, v: list[Rate], info: ValidationInfo) -> list[Rate]:
         if not v:
             raise ValueError("tariff must have at least one rate")
         if "rate_type" in info.data:
@@ -124,7 +126,7 @@ class Tariff(BaseModel):
 
     @field_validator("exit_fee_value")
     @classmethod
-    def validate_exit_fee(cls, v: Decimal | None, info) -> Decimal | None:
+    def validate_exit_fee(cls, v: Decimal | None, info: ValidationInfo) -> Decimal | None:
         if v is not None and not info.data.get("exit_fee_type"):
             raise ValueError(
                 "exit_fee_type is required when exit_fee_value is provided"
