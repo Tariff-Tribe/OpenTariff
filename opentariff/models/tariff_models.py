@@ -37,7 +37,8 @@ class Rate(BaseModel):
     month_to: int | None = Field(None, ge=1, le=12)
 
     # Fields for dynamic rates
-    rate_datetime: datetime | None = None
+    datetime_from: datetime | None = None
+    datetime_to: datetime | None = None
 
     # Fields for consumption-based rates
     consumption_from: Decimal | None = None
