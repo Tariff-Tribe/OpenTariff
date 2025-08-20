@@ -25,7 +25,7 @@ class TariffEnums:
             requirements = {
                 cls.SINGLE_RATE: [],
                 cls.TIME_OF_USE_STATIC: ["time_from", "time_to"],
-                cls.TIME_OF_USE_DYNAMIC: ["rate_datetime"],
+                cls.TIME_OF_USE_DYNAMIC: ["datetime_from", "datetime_to"],
                 cls.DEMAND_TIERED: ["consumption_from", "consumption_to"],
                 cls.TYPE_OF_USE: ["consumption_type"],
             }

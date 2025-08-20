@@ -32,15 +32,15 @@ def test_validate_rate_type():
         "rate_type": TariffEnums.RateType.TIME_OF_USE_DYNAMIC,
         "fuel": "electricity",
         "unit_rate": 0.15,
-        "rate_datetime": datetime.now(),
+        "datetime_from": datetime.now() - timedelta(hours=0.5),
+        "datetime_to": datetime.now(),
     }
     dynamic_rate = Rate.model_validate(rate_dict)
     assert dynamic_rate.rate_type == "time_of_use_dynamic"
+    
 
-    assert dynamic_rate.rate_datetime is not None
-
-    # Now remove the rate_datetime and check for validation error
-    rate_dict.pop("rate_datetime")
+    # Now remove the datetime_from and check for validation error
+    rate_dict.pop("datetime_from")
     with pytest.raises(ValidationError) as exc_info:
         Rate.model_validate(rate_dict)
 
