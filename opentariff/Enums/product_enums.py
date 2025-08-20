@@ -11,3 +11,8 @@ class ProductEnums:
     class OtherProductsType(str, EnumBase):
         UTILITY = "utility"
         PHYSICAL_ASSET = "physical_asset"
+
+    class Direction(str, EnumBase):
+        IMPORT = "import"
+        EXPORT = "export"
+        BI_DIRECTIONAL = "bi_directional"

@@ -54,3 +54,7 @@ class TariffEnums:
         ELECTRIC_VEHICLE = "electric_vehicle"
         HEAT_PUMP = "heat_pump"
         ANY = "any"
+
+    class RateDirection(str, EnumBase):
+        IMPORT = "import"
+        EXPORT = "export"

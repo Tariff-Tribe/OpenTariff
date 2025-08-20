@@ -25,6 +25,9 @@ class Rate(BaseModel):
     fuel: TariffEnums.Fuel
     unit_rate: Decimal = Field(..., gt=0, lt=100)
 
+    #optional field for bidirectional tariffs
+    direction: TariffEnums.RateDirection | None = None
+
     # Fields for time-of-use static rates
     time_from: time | None = None
     time_to: time | None = None

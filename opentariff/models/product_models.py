@@ -26,6 +26,7 @@ class Product(BaseModel):
     available_from: datetime
     available_to: datetime | None = None
     supplier_name: str | None = None
+    direction: ProductEnums.Direction = ProductEnums.Direction.IMPORT
 
     # Optional Attributes
     smart: bool | None = None
