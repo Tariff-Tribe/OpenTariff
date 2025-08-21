@@ -42,6 +42,11 @@ def test_validate_rate_type():
     with pytest.raises(ValidationError) as exc_info:
         Rate.model_validate(rate_dict)
 
+    # Now remove the time_from (no time fields in data now) and check for validation error
+    rate_dict.pop("time_from")
+    with pytest.raises(ValidationError) as exc_info:
+        Rate.model_validate(rate_dict)
+
     # Test 1b: Static tou rate with day_from and day_to
     rate_dict = {
         "rate_type": TariffEnums.RateType.TIME_OF_USE_STATIC,

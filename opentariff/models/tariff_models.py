@@ -83,10 +83,53 @@ class Rate(BaseModel):
             )
         return v
 
+    def validate_static_tou_rate_fields(self) -> Self:
+        """For a static_tou rate use the rate itself to determine 
+        which fields are required. The rate should have at least 
+        one of the pairs [time_from,time_to], [day_from,day_to], 
+        [month_from, month_to] and each pair should should appear
+        with both elements"""
+
+        required_fields = []
+        # Ensure the pairs [time_from,time_to], [day_from,day_to], [month_from, month_to]
+        # Always appear together as a pair
+        if getattr(self, "time_from", None) is not None or getattr(self, "time_to", None) is not None:
+            required_fields.extend(["time_from", "time_to"])
+
+        if getattr(self, "day_from", None) is not None or getattr(self, "day_to", None) is not None:
+            required_fields.extend(["day_from", "day_to"])
+
+        if getattr(self, "month_from", None) is not None or getattr(self, "month_to", None) is not None:
+            required_fields.extend(["month_from", "month_to"])
+        
+        if required_fields and not all(
+            getattr(self, field, None) is not None for field in required_fields
+        ):
+            raise ValueError(f"Rate with {self.rate_type} require that each of the elements of "
+                             "the pairs [time_from,time_to], [day_from,day_to], "
+                             "[month_from, month_to] appear together.")
+        
+        # Check we have at least one of the pairs
+        if not required_fields:
+            print("All time fields empty")
+            # Required fields is empty means that None of the fields were present
+            raise ValueError(f"Rate with {self.rate_type} require at least "
+                             "one of the pairs [time_from,time_to], [day_from,day_to], "
+                             "[month_from, month_to]")
+        
+        return self
+    
     @model_validator(mode="after")
     def validate_rate_fields(self) -> Self:
         """Validate that required fields are present based on rate type"""
         rate_type = self.rate_type
+
+        # We handle static tou seperately becuase the required fields depend on
+        # which fields are present
+        if rate_type == TariffEnums.RateType.TIME_OF_USE_STATIC:
+            return self.validate_static_tou_rate_fields()
+        
+        # All other rate types have predictable required fields so we use a straightforward mapping
         required_fields = TariffEnums.RateType.get_required_fields(rate_type)
 
         if required_fields and not all(

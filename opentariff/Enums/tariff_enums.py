@@ -19,12 +19,16 @@ class TariffEnums:
         TIME_OF_USE_DYNAMIC = "time_of_use_dynamic"
         DEMAND_TIERED = "demand_tiered"
         TYPE_OF_USE = "type_of_use"
-
+        
         @classmethod
         def get_required_fields(cls, rate_type) -> list[str]:
+            """Return a list of the fields required on a rate of rate_type.
+
+            TIME_OF_USE_STATIC rates are handled seperately. Look in the 
+            Rate.validate_static_tou_rate_fields() for TIME_OF_USE_STATIC behaviour.
+            """
             requirements = {
                 cls.SINGLE_RATE: [],
-                cls.TIME_OF_USE_STATIC: ["time_from", "time_to"],
                 cls.TIME_OF_USE_DYNAMIC: ["datetime_from", "datetime_to"],
                 cls.DEMAND_TIERED: ["consumption_from", "consumption_to"],
                 cls.TYPE_OF_USE: ["consumption_type"],
