@@ -9,7 +9,22 @@ from opentariff.Enums.tariff_enums import TariffEnums
 
 
 def test_validate_rate_type():
-    """Test the field validator for rate_type works correctly"""
+    """Test the field validator for rate_type works correctly.
+
+    Static TOU (Test 1a-1d):
+    Should have at least one of the pairs
+    [time_from,time_to], [day_from,day_to], [month_from, month_to]
+    and each pair should should have both elements as not None.
+
+    Dynamic ToU (Test 2):
+    Should have both datetime_from and datetime_to.
+
+    Consumption based (Test 3):
+    Must have cunsumption_from and consumption_to.
+
+    Type of use rate (Test 4):
+    Must have consumption_type
+    """
     
     # Test 1: Static tou rate with time_from and time_to
     rate_dict = {
@@ -24,6 +39,74 @@ def test_validate_rate_type():
 
     # Now remove the time_to and check for validation error
     rate_dict.pop("time_to")
+    with pytest.raises(ValidationError) as exc_info:
+        Rate.model_validate(rate_dict)
+
+    # Now remove the time_from (no time fields in data now) and check for validation error
+    rate_dict.pop("time_from")
+    with pytest.raises(ValidationError) as exc_info:
+        Rate.model_validate(rate_dict)
+
+    # Test 1b: Static tou rate with day_from and day_to
+    rate_dict = {
+        "rate_type": TariffEnums.RateType.TIME_OF_USE_STATIC,
+        "fuel": "electricity",
+        "unit_rate": 0.15,
+        "day_from": 1,
+        "day_to": 5,
+    }
+    static_tou_rate = Rate.model_validate(rate_dict)
+    assert static_tou_rate.rate_type == "time_of_use_static"
+
+    # Now remove the day_to and check for validation error
+    rate_dict.pop("day_to")
+    with pytest.raises(ValidationError) as exc_info:
+        Rate.model_validate(rate_dict)
+
+    # Test 1c: Static tou rate with month_from and month_to
+    rate_dict = {
+        "rate_type": TariffEnums.RateType.TIME_OF_USE_STATIC,
+        "fuel": "electricity",
+        "unit_rate": 0.15,
+        "month_from": 3,
+        "month_to": 9,
+    }
+    static_tou_rate = Rate.model_validate(rate_dict)
+    assert static_tou_rate.rate_type == "time_of_use_static"
+
+    # Now remove the month_to and check for validation error
+    rate_dict.pop("month_to")
+    with pytest.raises(ValidationError) as exc_info:
+        Rate.model_validate(rate_dict)
+    
+    # Test 1d: Static tou rate with month_from, month_to,
+    # day_to, day_from, time_from and time_to
+    rate_dict = {
+        "rate_type": TariffEnums.RateType.TIME_OF_USE_STATIC,
+        "fuel": "electricity",
+        "unit_rate": 0.15,
+        "month_from": 3,
+        "month_to": 9,
+        "day_from": 1,
+        "day_to": 4,
+        "time_from": "00:00",
+        "time_to": "06:00",
+    }
+    static_tou_rate = Rate.model_validate(rate_dict)
+    assert static_tou_rate.rate_type == "time_of_use_static"
+
+    # Now remove the month_to and check for validation error
+    rate_dict.pop("month_to")
+    with pytest.raises(ValidationError) as exc_info:
+        Rate.model_validate(rate_dict)
+    
+    # Now remove the month_from and check for validation success
+    rate_dict.pop("month_from")
+    static_tou_rate = Rate.model_validate(rate_dict)
+    assert static_tou_rate.rate_type == "time_of_use_static"
+
+    # Now remove day_to and check we get validation error
+    rate_dict.pop("day_to")
     with pytest.raises(ValidationError) as exc_info:
         Rate.model_validate(rate_dict)
 
