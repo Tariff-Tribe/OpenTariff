@@ -93,22 +93,15 @@ class Rate(BaseModel):
         required_fields = []
         # Ensure the pairs [time_from,time_to], [day_from,day_to], [month_from, month_to]
         # Always appear together as a pair
-        if getattr(self, "time_from", None) is not None or getattr(self, "time_to", None) is not None:
+        if getattr(self, "time_from", None) or getattr(self, "time_to", None):
             required_fields.extend(["time_from", "time_to"])
 
-        if getattr(self, "day_from", None) is not None or getattr(self, "day_to", None) is not None:
+        if getattr(self, "day_from", None) or getattr(self, "day_to", None):
             required_fields.extend(["day_from", "day_to"])
 
-        if getattr(self, "month_from", None) is not None or getattr(self, "month_to", None) is not None:
+        if getattr(self, "month_from", None) or getattr(self, "month_to", None):
             required_fields.extend(["month_from", "month_to"])
-        
-        if required_fields and not all(
-            getattr(self, field, None) is not None for field in required_fields
-        ):
-            raise ValueError(f"Rate with {self.rate_type} require that each of the elements of "
-                             "the pairs [time_from,time_to], [day_from,day_to], "
-                             "[month_from, month_to] appear together.")
-        
+
         # Check we have at least one of the pairs
         if not required_fields:
             print("All time fields empty")
@@ -116,6 +109,13 @@ class Rate(BaseModel):
             raise ValueError(f"Rate with {self.rate_type} require at least "
                              "one of the pairs [time_from,time_to], [day_from,day_to], "
                              "[month_from, month_to]")
+        
+        if not all(
+            getattr(self, field, None) for field in required_fields
+        ):
+            raise ValueError(f"Rate with {self.rate_type} require that each of the elements of "
+                             "the pairs [time_from,time_to], [day_from,day_to], "
+                             "[month_from, month_to] appear together.")
         
         return self
     
