@@ -6,7 +6,7 @@ Install with `pip install open-tariff`
 
 
 ## Creating a new release
-New releases are now published to PyPi using the `.github\workflows\publish.yml` process. To create a new release ddo the following.
+New releases are now published to PyPi using the `.github\workflows\publish.yml` process. To create a new release do the following.
 
 1. ### Checkout main branch
 `git pull origin`
