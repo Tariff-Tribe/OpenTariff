@@ -14,6 +14,7 @@ class StandingCharge(BaseModel):
     min_consumption: Decimal | None = Field(default=None, ge=0)
     line_loss: Decimal | None = Field(default=None, ge=0)
     standing_charge: Decimal
+    fuel: TariffEnums.Fuel
 
 
 class Rate(BaseModel):
