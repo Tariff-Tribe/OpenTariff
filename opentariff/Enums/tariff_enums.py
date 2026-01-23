@@ -62,3 +62,18 @@ class TariffEnums:
     class RateDirection(str, EnumBase):
         IMPORT = "import"
         EXPORT = "export"
+
+    class LDZRegion(EnumBase):
+        SC = "Scotland"
+        NO = "Northern"
+        NE = "North East"
+        NWT = "North West"
+        WMD = "West Midlands"
+        EM = "East Midlands"
+        EA = "East Anglia"
+        NT = "North Thames"
+        SO = "Southern"
+        SE = "South East"
+        WN = "Wales North"
+        WS = "Wales South"
+        SW = "South West"
