@@ -9,10 +9,10 @@ class ProductEnums:
         VARIABLE = "variable"
 
     class BundledWithType(str, EnumBase):
-        """What a bundled product is bundled with: a physical asset
+        """What a bundled product is bundled with: an asset
         (solar panels, battery) or a service (boiler care insurance)."""
 
-        PHYSICAL_ASSET = "physical_asset"
+        ASSET = "asset"
         SERVICE = "service"
 
     class Direction(str, EnumBase):
