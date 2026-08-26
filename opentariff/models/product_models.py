@@ -9,7 +9,7 @@ class BundledProduct(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    type: ProductEnums.OtherProductsType
+    type: ProductEnums.BundledWithType
     name: str
     description: str | None = None
 

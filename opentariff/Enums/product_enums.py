@@ -8,9 +8,12 @@ class ProductEnums:
         FIXED = "fixed"
         VARIABLE = "variable"
 
-    class OtherProductsType(str, EnumBase):
-        UTILITY = "utility"
-        PHYSICAL_ASSET = "physical_asset"
+    class BundledWithType(str, EnumBase):
+        """What a bundled product is bundled with: an asset
+        (solar panels, battery) or a service (boiler care insurance)."""
+
+        ASSET = "asset"
+        SERVICE = "service"
 
     class Direction(str, EnumBase):
         IMPORT = "import"
