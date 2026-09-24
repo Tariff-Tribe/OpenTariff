@@ -147,6 +147,7 @@ class Tariff(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     dno_region: int = Field(..., ge=10, le=23)
+    ldz_region: TariffEnums.LDZRegion | None = None
     rate_type: TariffEnums.RateType
     fuel_type: TariffEnums.FuelType
     payment_method: TariffEnums.PaymentMethod
