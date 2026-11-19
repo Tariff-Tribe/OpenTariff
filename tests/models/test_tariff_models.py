@@ -164,4 +164,24 @@ def test_validate_rate_type():
         Rate.model_validate(rate_dict)
         
     assert f"{rate_dict['rate_type']} rates require" in str(exc_info.value)
-    
+
+
+def test_type_and_time_of_use_rates():
+    base = {
+        "rate_type": TariffEnums.RateType.TYPE_AND_TIME_OF_USE,
+        "fuel": "electricity",
+        "unit_rate": 8,
+    }
+    home_off_peak = Rate.model_validate(
+        {**base, "consumption_type": TariffEnums.ConsumptionType.ANY, "time_from": "23:30", "time_to": "05:30"}
+    )
+    ev_off_peak = Rate.model_validate({**base, "consumption_type": TariffEnums.ConsumptionType.EV_OFFPEAK})
+
+    assert home_off_peak.time_from.isoformat() == "23:30:00"
+    assert ev_off_peak.time_from is None
+
+    with pytest.raises(ValidationError, match="consumption_type"):
+        Rate.model_validate({**base, "time_from": "23:30", "time_to": "05:30"})
+
+    with pytest.raises(ValidationError, match="appear together"):
+        Rate.model_validate({**base, "consumption_type": TariffEnums.ConsumptionType.ANY, "time_from": "23:30"})

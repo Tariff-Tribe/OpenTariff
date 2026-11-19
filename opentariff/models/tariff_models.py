@@ -84,7 +84,7 @@ class Rate(BaseModel):
             )
         return v
 
-    def validate_static_tou_rate_fields(self) -> Self:
+    def validate_static_tou_rate_fields(self, require_pair: bool = True) -> Self:
         """For a static_tou rate use the rate itself to determine 
         which fields are required. The rate should have at least 
         one of the pairs [time_from,time_to], [day_from,day_to], 
@@ -105,6 +105,8 @@ class Rate(BaseModel):
 
         # Check we have at least one of the pairs
         if not required_fields:
+            if not require_pair:
+                return self
             print("All time fields empty")
             # Required fields is empty means that None of the fields were present
             raise ValueError(f"Rate with {self.rate_type} require at least "
@@ -137,6 +139,10 @@ class Rate(BaseModel):
             getattr(self, field, None) is not None for field in required_fields
         ):
             raise ValueError(f"{rate_type} rates require {', '.join(required_fields)}")
+
+        # Time windows are optional (e.g. EV rate at any time) but must be complete pairs
+        if rate_type == TariffEnums.RateType.TYPE_AND_TIME_OF_USE:
+            return self.validate_static_tou_rate_fields(require_pair=False)
 
         return self
 
