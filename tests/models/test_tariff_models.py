@@ -185,3 +185,16 @@ def test_type_and_time_of_use_rates():
 
     with pytest.raises(ValidationError, match="appear together"):
         Rate.model_validate({**base, "consumption_type": TariffEnums.ConsumptionType.ANY, "time_from": "23:30"})
+
+
+@pytest.mark.parametrize("rate_type", [TariffEnums.RateType.TIME_OF_USE_STATIC, TariffEnums.RateType.TYPE_AND_TIME_OF_USE])
+def test_time_pairs_handle_falsy_midnight_and_monday(rate_type):
+    base = {"rate_type": rate_type, "fuel": "electricity", "unit_rate": 8, "consumption_type": "any"}
+
+    Rate.model_validate({**base, "time_from": "23:30", "time_to": "00:00"})
+    Rate.model_validate({**base, "day_from": 0, "day_to": 4})
+
+    with pytest.raises(ValidationError, match="appear together"):
+        Rate.model_validate({**base, "time_from": "00:00"})
+    with pytest.raises(ValidationError, match="appear together"):
+        Rate.model_validate({**base, "day_from": 0})
