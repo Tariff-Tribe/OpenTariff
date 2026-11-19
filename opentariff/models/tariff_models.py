@@ -84,27 +84,24 @@ class Rate(BaseModel):
             )
         return v
 
-    def validate_static_tou_rate_fields(self) -> Self:
+    def validate_static_tou_rate_fields(self, require_pair: bool = True) -> Self:
         """For a static_tou rate use the rate itself to determine 
         which fields are required. The rate should have at least 
         one of the pairs [time_from,time_to], [day_from,day_to], 
         [month_from, month_to] and each pair should should appear
         with both elements"""
 
-        required_fields = []
         # Ensure the pairs [time_from,time_to], [day_from,day_to], [month_from, month_to]
-        # Always appear together as a pair
-        if getattr(self, "time_from", None) or getattr(self, "time_to", None):
-            required_fields.extend(["time_from", "time_to"])
-
-        if getattr(self, "day_from", None) or getattr(self, "day_to", None):
-            required_fields.extend(["day_from", "day_to"])
-
-        if getattr(self, "month_from", None) or getattr(self, "month_to", None):
-            required_fields.extend(["month_from", "month_to"])
+        # Always appear together as a pair.
+        required_fields = []
+        for start, end in (("time_from", "time_to"), ("day_from", "day_to"), ("month_from", "month_to")):
+            if getattr(self, start) is not None or getattr(self, end) is not None:
+                required_fields.extend([start, end])
 
         # Check we have at least one of the pairs
         if not required_fields:
+            if not require_pair:
+                return self
             print("All time fields empty")
             # Required fields is empty means that None of the fields were present
             raise ValueError(f"Rate with {self.rate_type} require at least "
@@ -112,7 +109,7 @@ class Rate(BaseModel):
                              "[month_from, month_to]")
         
         if not all(
-            getattr(self, field, None) for field in required_fields
+            getattr(self, field) is not None for field in required_fields
         ):
             raise ValueError(f"Rate with {self.rate_type} require that each of the elements of "
                              "the pairs [time_from,time_to], [day_from,day_to], "
@@ -137,6 +134,10 @@ class Rate(BaseModel):
             getattr(self, field, None) is not None for field in required_fields
         ):
             raise ValueError(f"{rate_type} rates require {', '.join(required_fields)}")
+
+        # Time windows are optional (e.g. EV rate at any time) but must be complete pairs
+        if rate_type == TariffEnums.RateType.TYPE_AND_TIME_OF_USE:
+            return self.validate_static_tou_rate_fields(require_pair=False)
 
         return self
 

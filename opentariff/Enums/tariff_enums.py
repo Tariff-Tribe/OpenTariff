@@ -19,6 +19,7 @@ class TariffEnums:
         TIME_OF_USE_DYNAMIC = "time_of_use_dynamic"
         DEMAND_TIERED = "demand_tiered"
         TYPE_OF_USE = "type_of_use"
+        TYPE_AND_TIME_OF_USE = "type_and_time_of_use"
         
         @classmethod
         def get_required_fields(cls, rate_type) -> list[str]:
@@ -32,6 +33,7 @@ class TariffEnums:
                 cls.TIME_OF_USE_DYNAMIC: ["datetime_from", "datetime_to"],
                 cls.DEMAND_TIERED: ["consumption_from", "consumption_to"],
                 cls.TYPE_OF_USE: ["consumption_type"],
+                cls.TYPE_AND_TIME_OF_USE: ["consumption_type"],
             }
             return requirements.get(rate_type, [])
 
@@ -56,6 +58,8 @@ class TariffEnums:
 
     class ConsumptionType(str, EnumBase):
         ELECTRIC_VEHICLE = "electric_vehicle"
+        ELECTRIC_VEHICLE_PEAK = "electric_vehicle_peak"
+        ELECTRIC_VEHICLE_OFFPEAK = "electric_vehicle_offpeak"
         HEAT_PUMP = "heat_pump"
         ANY = "any"
 
