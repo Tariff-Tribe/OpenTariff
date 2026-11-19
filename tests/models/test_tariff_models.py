@@ -175,7 +175,7 @@ def test_type_and_time_of_use_rates():
     home_off_peak = Rate.model_validate(
         {**base, "consumption_type": TariffEnums.ConsumptionType.ANY, "time_from": "23:30", "time_to": "05:30"}
     )
-    ev_off_peak = Rate.model_validate({**base, "consumption_type": TariffEnums.ConsumptionType.EV_OFFPEAK})
+    ev_off_peak = Rate.model_validate({**base, "consumption_type": TariffEnums.ConsumptionType.ELECTRIC_VEHICLE_OFFPEAK})
 
     assert home_off_peak.time_from.isoformat() == "23:30:00"
     assert ev_off_peak.time_from is None
